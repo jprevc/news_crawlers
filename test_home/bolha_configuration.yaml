@@ -1,0 +1,5 @@
+email_recipients: ['jost.prevc@gmail.com', 'manca.smid@gmail.com']
+email_body_format: "URL: {url} Price: {price}"
+urls:
+  - https://www.bolha.com/?ctl=search_ads&keywords=pet+prijateljev
+  - https://www.bolha.com/?ctl=search_ads&keywords=enid%20blyton
