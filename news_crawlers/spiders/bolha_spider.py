@@ -27,7 +27,7 @@ class BolhaSpider(scrapy.Spider):
 
         next_page = response.xpath('//a[@class="Pagination-link"][text() = "Naslednja\xa0"]')
         if next_page:
-            yield response.follow(next_page.attrib['href'], callback=self.parse)
+            yield response.follow(next_page.attrib['href'], cb_kwargs={'query': query})
 
 
 if __name__ == '__main__':
