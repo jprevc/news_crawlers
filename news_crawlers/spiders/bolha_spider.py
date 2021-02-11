@@ -6,7 +6,7 @@ from scrapy.utils.project import get_project_settings
 
 class BolhaSpider(scrapy.Spider):
     name = "bolha"
-    home_path = os.environ.get('PAGINATOR_CRAWLER_HOME', os.path.dirname(__file__))
+    home_path = os.environ.get('NEWS_CRAWLERS_HOME', os.path.dirname(__file__))
 
     # get configuration data
     with open(os.path.join(home_path, 'bolha_configuration.yaml'), 'r') as f:
@@ -27,7 +27,7 @@ class BolhaSpider(scrapy.Spider):
 
         next_page = response.xpath('//a[@class="Pagination-link"][text() = "Naslednja\xa0"]')
         if next_page:
-            yield response.follow(next_page.attrib['href'], callback=self.parse)
+            yield response.follow(next_page.attrib['href'], cb_kwargs={'query': query})
 
 
 if __name__ == '__main__':
