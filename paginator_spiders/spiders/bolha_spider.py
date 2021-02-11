@@ -12,12 +12,15 @@ class BolhaSpider(scrapy.Spider):
     with open(os.path.join(home_path, 'bolha_configuration.yaml'), 'r') as f:
         config_data = yaml.load(f)
 
-    start_urls = config_data['urls']
+    def start_requests(self):
+        for query, url in self.config_data['urls'].items():
+            yield scrapy.Request(url=url, callback=self.parse, cb_kwargs={'query': query})
 
-    def parse(self, response):
+    def parse(self, response, query):
         items = response.xpath('//*[text() = "Oglasi na bolha.com"]/following-sibling::ul/li[@data-href]')
         for item in items:
             yield {
+                'query': query,
                 'url': response.urljoin(item.attrib['data-href']),
                 'price': item.xpath('.//li[@class="price-item"]/strong//text()').get().strip(),
             }
