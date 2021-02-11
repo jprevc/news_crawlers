@@ -6,7 +6,7 @@ from scrapy.utils.project import get_project_settings
 
 class BolhaSpider(scrapy.Spider):
     name = "bolha"
-    home_path = os.environ.get('PAGINATOR_CRAWLER_HOME', os.path.dirname(__file__))
+    home_path = os.environ.get('NEWS_CRAWLERS_HOME', os.path.dirname(__file__))
 
     # get configuration data
     with open(os.path.join(home_path, 'bolha_configuration.yaml'), 'r') as f:

@@ -1,4 +1,4 @@
-# Scrapy settings for paginator_spiders project
+# Scrapy settings for news_crawlers project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'paginator_spiders'
+BOT_NAME = 'news_crawlers'
 
-SPIDER_MODULES = ['paginator_spiders.spiders']
-NEWSPIDER_MODULE = 'paginator_spiders.spiders'
+SPIDER_MODULES = ['news_crawlers.spiders']
+NEWSPIDER_MODULE = 'news_crawlers.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'paginator_spiders (+http://www.yourdomain.com)'
+#USER_AGENT = 'news_crawlers (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = False
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'paginator_spiders.middlewares.PaginatorSpidersSpiderMiddleware': 543,
+#    'news_crawlers.middlewares.PaginatorSpidersSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'paginator_spiders.middlewares.PaginatorSpidersDownloaderMiddleware': 543,
+#    'news_crawlers.middlewares.PaginatorSpidersDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -63,7 +63,7 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    'paginator_spiders.pipelines.PaginatorSpidersPipeline': 300,
+#    'news_crawlers.pipelines.PaginatorSpidersPipeline': 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
