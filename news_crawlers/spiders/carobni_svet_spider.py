@@ -28,6 +28,7 @@ class CarobniSvetSpider(scrapy.Spider):
         return scrapy.Request(url=self.config_data['urls']['photos'], callback=self.get_images)
 
     def get_images(self, response):
+        # get all image items in 'galerija'
         image_items = response.xpath('//div[@id="galerija"]/a')
 
         for item in image_items:
@@ -39,7 +40,9 @@ class CarobniSvetSpider(scrapy.Spider):
         yield scrapy.Request(url=self.config_data['urls']['blog'], callback=self.get_blog, dont_filter=True)
 
     def get_blog(self, response):
+        # get all blog items
         blog_items = response.xpath('//div[@id="blogs"]/*')
+
         for item in blog_items:
             yield {
                 'type': "blog",
