@@ -11,7 +11,7 @@ class CarobniSvetSpider(scrapy.Spider):
 
     # get configuration data
     with open(os.path.join(home_path, 'carobni_svet_configuration.yaml'), 'r') as f:
-        config_data = yaml.load(f)
+        config_data = yaml.safe_load(f)
 
     def start_requests(self):
         return [scrapy.http.FormRequest(
