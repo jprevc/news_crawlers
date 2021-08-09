@@ -1,5 +1,8 @@
-notification_type: 'email'
-recipients: ['jost.prevc@gmail.com']
+notifications:
+  email:
+    recipients: ['jost.prevc@gmail.com']
+  pushover:
+    recipients: ['ukdwndomjog3swwos57umfydpsa2sk']
 message_body_format: "Type: {type}\nID/URL: {id_url}\n"
 urls:
   login: 'https://carobni-svet.com/portal/parents/login'
