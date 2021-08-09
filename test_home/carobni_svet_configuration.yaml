@@ -1,5 +1,6 @@
-email_recipients: ['jost.prevc@gmail.com']
-email_body_format: "Type: {type}\nID/URL: {id_url}\n"
+notification_type: 'email'
+recipients: ['jost.prevc@gmail.com']
+message_body_format: "Type: {type}\nID/URL: {id_url}\n"
 urls:
   login: 'https://carobni-svet.com/portal/parents/login'
   photos: 'https://carobni-svet.com/za-starse-fotodnevnik'
