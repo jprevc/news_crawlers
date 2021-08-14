@@ -1,5 +1,11 @@
-email_recipients: ['jost.prevc@gmail.com']
-email_body_format: "Query: {query}\nURL: {url}\nPrice: {price}\n"
+notifications:
+  email:
+    recipients: ['jost.prevc@gmail.com']
+    message_body_format: "Query: {query}\nURL: {url}\nPrice: {price}\n"
+  pushover:
+    recipients: ['ukdwndomjog3swwos57umfydpsa2sk']
+    send_separately: True
+    message_body_format: "Query: {query}\nPrice: {price}\n"
 urls:
   'pet_prijateljev': https://www.bolha.com/?ctl=search_ads&keywords=pet+prijateljev
   'enid_blyton': https://www.bolha.com/?ctl=search_ads&keywords=enid%20blyton
