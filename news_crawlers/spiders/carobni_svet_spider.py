@@ -60,7 +60,7 @@ class CarobniSvetSpider(scrapy.Spider):
         for item in image_items:
             yield {
                 'type': "image",
-                'id_url': item.attrib['href']
+                'url': item.attrib['href']
             }
 
         yield scrapy.Request(url=self.config_data['urls']['blog'], callback=self.get_blog, dont_filter=True)
@@ -76,7 +76,7 @@ class CarobniSvetSpider(scrapy.Spider):
         for item in blog_items:
             yield {
                 'type': "blog",
-                'id_url': item.attrib['id']
+                'url': item.attrib['id']
             }
 
 
