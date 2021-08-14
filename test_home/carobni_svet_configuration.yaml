@@ -1,5 +1,11 @@
-email_recipients: ['jost.prevc@gmail.com']
-email_body_format: "Type: {type}\nID/URL: {id_url}\n"
+notifications:
+  email:
+    recipients: ['jost.prevc@gmail.com']
+    message_body_format: "Type: {type}\nID/URL: {url}\n"
+  pushover:
+    recipients: ['ukdwndomjog3swwos57umfydpsa2sk']
+    message_body_format: "Type: {type}\n"
+    send_separately: True
 urls:
   login: 'https://carobni-svet.com/portal/parents/login'
   photos: 'https://carobni-svet.com/za-starse-fotodnevnik'
