@@ -26,14 +26,39 @@ class Spider(ABC):
 class AvtonetSpider(Spider):
     name = "avtonet"
 
-    def run(self) -> set:
-        for url in self.config.urls.values():
-            avtonet_html = requests.get(url, allow_redirects=False, timeout=10).text
+    headers = {
+        "Accept-Encoding": "gzip, deflate, sdch",
+        "Accept-Language": "en-US,en;q=0.8",
+        "Upgrade-Insecure-Requests": "1",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
+        "56.0.2924.87 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Cache-Control": "max-age=0",
+        "Connection": "keep-alive",
+    }
+
+    def run(self) -> list[dict]:
+        found_listings = []
+        for query, url in self.config.urls.items():
+            avtonet_html = requests.get(url, headers=self.headers, timeout=10).text
 
             avtonet_content = bs4.BeautifulSoup(avtonet_html, "html.parser")
-            # avtonet_content.select()
 
-        return {}
+            for listing in avtonet_content.select("div[class*=GO-Results-Row]"):
+                listing_title = listing.select("div[class*=GO-Results-Naziv]")[0].select("span")[0].text
+                listing_href = listing.select("a[class*=stretched-link]")[0].attrs["href"]
+                listing_price = listing.select("div[class*=GO-Results-Price-TXT-Regular]")[0].text.strip()
+
+                listing_dict = {
+                    "query": query,
+                    "title": listing_title,
+                    "url": listing_href,
+                    "price": listing_price,
+                }
+
+                found_listings.append(listing_dict)
+
+        return found_listings
 
 
 def get_spider_by_name(name: str) -> Type[Spider]:
