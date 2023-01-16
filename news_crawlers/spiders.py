@@ -20,7 +20,7 @@ class Spider(ABC):
         pass
 
     @abstractmethod
-    def run(self) -> set:
+    def run(self) -> list[dict]:
         pass
 
 
