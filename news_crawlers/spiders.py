@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 import sys
 import inspect
-from typing import Type
 
 import bs4
 import requests
@@ -61,7 +62,7 @@ class AvtonetSpider(Spider):
         return found_listings
 
 
-def get_spider_by_name(name: str) -> Type[Spider]:
+def get_spider_by_name(name: str) -> type[Spider]:
     """
     Finds spider class with the 'name' attribute equal to the one specified.
 
