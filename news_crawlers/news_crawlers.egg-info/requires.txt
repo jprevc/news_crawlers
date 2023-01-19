@@ -1,0 +1,17 @@
+beautifulsoup4
+pydantic
+PyYAML
+requests
+numpy
+parameterized
+pytest
+
+[dev]
+pytest
+parameterized
+pylint
+pre-commit
+
+[test]
+pytest
+parameterized

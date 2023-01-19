@@ -1,15 +1,28 @@
-# News Crawlers
+Metadata-Version: 2.1
+Name: news-crawlers
+Version: 1.0.0
+Summary: An extensible python library to create web crawlers which alert users on news.
+Author-email: Jost Prevc <jost.prevc@gmail.com>
+License: MIT
+Keywords: crawler,news
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+Provides-Extra: test
+License-File: LICENSE.txt
 
+# News Crawlers
 Contains various spiders which crawl websites for new content. If any new
 content is found, users are alerted via email.
 
-![Tests](https://github.com/jprevc/news_crawlers/actions/workflows/tests.yml/badge.svg)
 
 Checkout
 ----------------
 Checkout this project with
 
     git clone https://github.com/jprevc/news_crawlers.git
+
 
 Environment configuration
 ----------------------------
@@ -40,6 +53,7 @@ An example of configuration file contents (bolha_configuration.yaml):
     urls:
       'pet_prijateljev': https://www.bolha.com/?ctl=search_ads&keywords=pet+prijateljev
       'enid_blyton': https://www.bolha.com/?ctl=search_ads&keywords=enid%20blyton
+
 
 Notification configuration
 ------------------------------
