@@ -7,12 +7,10 @@ import inspect
 import bs4
 import requests
 
-from news_crawlers import configuration
-
 
 class Spider(ABC):
-    def __init__(self, config: configuration.NewsCrawlerConfig) -> None:
-        self.config = config
+    def __init__(self, urls: dict[str, str]) -> None:
+        self.urls = urls
 
     @property
     @abstractmethod
@@ -38,10 +36,13 @@ class AvtonetSpider(Spider):
         "Connection": "keep-alive",
     }
 
+    def _get_raw_html(self, url):
+        return requests.get(url, headers=self.headers, timeout=10).text
+
     def run(self) -> list[dict]:
         found_listings = []
-        for query, url in self.config.urls.items():
-            avtonet_html = requests.get(url, headers=self.headers, timeout=10).text
+        for query, url in self.urls.items():
+            avtonet_html = self._get_raw_html(url)
 
             avtonet_content = bs4.BeautifulSoup(avtonet_html, "html.parser")
 
