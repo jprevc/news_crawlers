@@ -10,40 +10,51 @@ import bs4
 import requests
 
 
+HEADERS = {
+    "Accept-Encoding": "gzip, deflate, sdch",
+    "Accept-Language": "en-US,en;q=0.8",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
+    "56.0.2924.87 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Cache-Control": "max-age=0",
+    "Connection": "keep-alive",
+}
+
+
 class Spider(ABC):
-    def __init__(self, urls: dict[str, str]) -> None:
-        self.urls = urls
+    def __init__(self, queries: dict[str, str]) -> None:
+        """
+        Constructs a spider. Spider has a "run" method, which will crawl all set queries when invoked.
+
+        :param queries: Query name and url pairs to be crawled.
+        """
+        self.queries = queries
 
     @property
     @abstractmethod
     def name(self) -> str:
-        pass
+        """
+        Name for the spider. This name is used when referring to spiders in the configuration files or when calling
+        the spiders from the CLI.
+        """
 
     @abstractmethod
     def run(self) -> list[dict]:
-        pass
+        """
+        Runs crawling on all set queries.
+        """
 
 
 class AvtonetSpider(Spider):
     name = "avtonet"
 
-    headers = {
-        "Accept-Encoding": "gzip, deflate, sdch",
-        "Accept-Language": "en-US,en;q=0.8",
-        "Upgrade-Insecure-Requests": "1",
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
-        "56.0.2924.87 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Cache-Control": "max-age=0",
-        "Connection": "keep-alive",
-    }
-
     def _get_raw_html(self, url):
-        return requests.get(url, headers=self.headers, timeout=10).text
+        return requests.get(url, headers=HEADERS, timeout=10).text
 
     def run(self) -> list[dict]:
         found_listings = []
-        for query, url in self.urls.items():
+        for query, url in self.queries.items():
             avtonet_html = self._get_raw_html(url)
 
             avtonet_content = bs4.BeautifulSoup(avtonet_html, "html.parser")
@@ -103,7 +114,7 @@ class CarobniSvetSpider(Spider):
             login_response = session.post(login_url, data=login_info)
             assert login_response.ok
 
-            for query, url in self.urls.items():
+            for query, url in self.queries.items():
                 carobni_svet_html = session.get(url, timeout=10).text
                 carobni_svet_bs = bs4.BeautifulSoup(carobni_svet_html, "html.parser")
 
