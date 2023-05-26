@@ -123,6 +123,74 @@ class CarobniSvetSpider(Spider):
         return found_items
 
 
+class BolhaSpider(Spider):
+
+    name = "bolha"
+
+    def run(self) -> list[dict]:
+
+        found_items: list[dict[str, str]] = []
+
+        for query_name, query_url in self.queries.items():
+
+            # crawl initial page
+            html = self._get_html_from_url(query_url)
+            found_items.extend(self._get_items_from_current_page(html, query_name))
+
+            current_page_ind = 2
+            while True:
+                if current_page_ind > 1000:
+                    raise RuntimeError("Something has gone wrong, to many iterations have been performed.")
+
+                # crawl initial page
+                try:
+                    html = self._get_html_from_url(f"{query_url}&page={current_page_ind}")
+                except ConnectionRefusedError:
+                    break
+
+                found_items_on_current_page = self._get_items_from_current_page(html, query_name)
+
+                if not found_items_on_current_page:
+                    break
+
+                found_items.extend(found_items_on_current_page)
+
+                current_page_ind += 1
+
+        return found_items
+
+    @staticmethod
+    def _get_html_from_url(url: str) -> str:
+        response = requests.get(url, headers=HEADERS, timeout=10)
+
+        if response.status_code != 200:
+            raise ConnectionRefusedError("Page is not accessible")
+
+        return response.text
+
+    @staticmethod
+    def _get_items_from_current_page(html: str, query_name: str) -> list[dict]:
+        bolha_bs = bs4.BeautifulSoup(html, features="html.parser")
+
+        listings = bolha_bs.select("li.EntityList-item")
+
+        found_items: list[dict[str, str]] = []
+        for listing in listings:
+            listing_el = listing.select("a.link")
+            price_el = listing.select("strong.price")
+
+            if not listing_el or not price_el:
+                continue
+
+            title = listing_el[0].text
+            href = listing_el[0].attrs["href"]
+            price = price_el[0].get_text(strip=True)
+
+            found_items.append({"query": query_name, "title": title, "price": price, "link": href})
+
+        return found_items
+
+
 def get_spider_by_name(name: str) -> type[Spider]:
     """
     Finds spider class with the 'name' attribute equal to the one specified.
