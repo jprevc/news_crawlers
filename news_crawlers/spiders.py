@@ -82,7 +82,7 @@ class CarobniSvetSpider(Spider):
     @staticmethod
     def _get_images(bs_content: bs4.BeautifulSoup) -> list[dict]:
 
-        image_elements = bs_content.select("div[id=galerija]")[0].select("img")
+        image_elements = bs_content.select("ul[id=images]")[0].select("img")
 
         image_urls = [image.get("src") for image in image_elements]
 
