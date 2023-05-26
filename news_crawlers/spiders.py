@@ -183,10 +183,10 @@ class BolhaSpider(Spider):
                 continue
 
             title = listing_el[0].text
-            href = listing_el[0].attrs["href"]
+            url = "https://www.bolha.com" + listing_el[0].attrs["href"]
             price = price_el[0].get_text(strip=True)
 
-            found_items.append({"query": query_name, "title": title, "price": price, "link": href})
+            found_items.append({"query": query_name, "title": title, "price": price, "url": url})
 
         return found_items
 
