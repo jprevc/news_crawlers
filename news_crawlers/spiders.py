@@ -84,7 +84,7 @@ class CarobniSvetSpider(Spider):
 
         image_elements = bs_content.select("ul[id=images]")[0].select("img")
 
-        image_urls = [image.get("src") for image in image_elements]
+        image_urls = [image.get("data-original-src") for image in image_elements]
 
         return [{"type": "image", "data": image_url} for image_url in image_urls]
 
