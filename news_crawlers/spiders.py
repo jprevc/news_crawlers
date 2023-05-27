@@ -10,18 +10,6 @@ import bs4
 import requests
 
 
-HEADERS = {
-    "Accept-Encoding": "gzip, deflate, sdch",
-    "Accept-Language": "en-US,en;q=0.8",
-    "Upgrade-Insecure-Requests": "1",
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
-    "56.0.2924.87 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-    "Cache-Control": "max-age=0",
-    "Connection": "keep-alive",
-}
-
-
 class Spider(ABC):
     def __init__(self, queries: dict[str, str]) -> None:
         """
@@ -49,13 +37,10 @@ class Spider(ABC):
 class AvtonetSpider(Spider):
     name = "avtonet"
 
-    def _get_raw_html(self, url):
-        return requests.get(url, headers=HEADERS, timeout=10).text
-
     def run(self) -> list[dict]:
         found_listings = []
         for query, url in self.queries.items():
-            avtonet_html = self._get_raw_html(url)
+            avtonet_html = get_html_from_url(url)
 
             avtonet_content = bs4.BeautifulSoup(avtonet_html, "html.parser")
 
@@ -134,7 +119,7 @@ class BolhaSpider(Spider):
         for query_name, query_url in self.queries.items():
 
             # crawl initial page
-            html = self._get_html_from_url(query_url)
+            html = get_html_from_url(query_url)
             found_items.extend(self._get_items_from_current_page(html, query_name))
 
             current_page_ind = 2
@@ -144,7 +129,7 @@ class BolhaSpider(Spider):
 
                 # crawl initial page
                 try:
-                    html = self._get_html_from_url(f"{query_url}&page={current_page_ind}")
+                    html = get_html_from_url(f"{query_url}&page={current_page_ind}")
                 except ConnectionRefusedError:
                     break
 
@@ -158,15 +143,6 @@ class BolhaSpider(Spider):
                 current_page_ind += 1
 
         return found_items
-
-    @staticmethod
-    def _get_html_from_url(url: str) -> str:
-        response = requests.get(url, headers=HEADERS, timeout=10)
-
-        if response.status_code != 200:
-            raise ConnectionRefusedError("Page is not accessible")
-
-        return response.text
 
     @staticmethod
     def _get_items_from_current_page(html: str, query_name: str) -> list[dict]:
@@ -193,6 +169,26 @@ class BolhaSpider(Spider):
             found_items.append({"query": query_name, "title": title, "price": price, "url": url})
 
         return found_items
+
+
+def get_html_from_url(url: str) -> str:
+    headers = {
+        "Accept-Encoding": "gzip, deflate, sdch",
+        "Accept-Language": "en-US,en;q=0.8",
+        "Upgrade-Insecure-Requests": "1",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
+        "56.0.2924.87 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Cache-Control": "max-age=0",
+        "Connection": "keep-alive",
+    }
+
+    response = requests.get(url, headers=headers, timeout=10)
+
+    if response.status_code != 200:
+        raise ConnectionRefusedError("Page is not accessible")
+
+    return response.text
 
 
 def get_spider_by_name(name: str) -> type[Spider]:
