@@ -1,9 +1,9 @@
 """
 Contains various mock classes which can be used in tests.
 """
+
 import pathlib
 from typing import Callable
-
 
 # pylint: disable=unused-argument
 

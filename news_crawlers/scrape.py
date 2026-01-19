@@ -1,6 +1,7 @@
 """
 Main module. Runs defined crawler and send notifications to user, if any news are found.
 """
+
 from __future__ import annotations
 
 import json
@@ -89,7 +90,7 @@ def notify(diff: dict[str, list[dict]], spiders_configuration: dict[str, configu
 
 def send_notifications(notificators_config: dict, spider_name: str, new_data: list):
     # send message with each configured notificator
-    for (notificator_type_str, notificator_data) in notificators_config.items():
+    for notificator_type_str, notificator_data in notificators_config.items():
         notificator = notificators.get_notificator_by_name(notificator_type_str)(notificator_data)
 
         notificator.send_items(
