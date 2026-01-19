@@ -1,6 +1,7 @@
 """
 Contains tests for Notificator classes.
 """
+
 from __future__ import annotations
 
 from itertools import product
