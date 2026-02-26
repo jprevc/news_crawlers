@@ -35,6 +35,10 @@ class Spider(ABC):
 
 
 class AvtonetSpider(Spider):
+    """
+    Spider for avtonet.si vehicle listings. Extracts title, URL, and price from search result rows.
+    """
+
     name = "avtonet"
 
     def run(self) -> list[dict]:
@@ -62,6 +66,11 @@ class AvtonetSpider(Spider):
 
 
 class CarobniSvetSpider(Spider):
+    """
+    Spider for carobni-svet.com. Requires CS_EMAIL and CS_PASS environment variables for login.
+    Supports 'photos' and 'blog' query types.
+    """
+
     name = "carobni_svet"
 
     @staticmethod
@@ -97,7 +106,7 @@ class CarobniSvetSpider(Spider):
         found_items = []
         with requests.Session() as session:
             login_response = session.post(login_url, data=login_info)
-            assert login_response.ok
+            login_response.raise_for_status()
 
             for query, url in self.queries.items():
                 carobni_svet_html = session.get(url, timeout=10).text
@@ -109,6 +118,10 @@ class CarobniSvetSpider(Spider):
 
 
 class BolhaSpider(Spider):
+    """
+    Spider for bolha.com classifieds. Paginates through results (up to 1000 pages) and extracts
+    listing title, URL, and price.
+    """
 
     name = "bolha"
 
@@ -130,7 +143,7 @@ class BolhaSpider(Spider):
                 # crawl initial page
                 try:
                     html = get_html_from_url(f"{query_url}&page={current_page_ind}")
-                except ConnectionRefusedError:
+                except requests.HTTPError:
                     break
 
                 found_items_on_current_page = self._get_items_from_current_page(html, query_name)
@@ -172,6 +185,14 @@ class BolhaSpider(Spider):
 
 
 def get_html_from_url(url: str) -> str:
+    """
+    Fetch a URL and return its response body as text.
+
+    :param url: The URL to request.
+    :return: The response body as a string.
+    :raises requests.HTTPError: If the response status code is not 2xx.
+    :raises requests.RequestException: On connection or other request errors.
+    """
     headers = {
         "Accept-Encoding": "gzip, deflate, sdch",
         "Accept-Language": "en-US,en;q=0.8",
@@ -184,10 +205,7 @@ def get_html_from_url(url: str) -> str:
     }
 
     response = requests.get(url, headers=headers, timeout=10)
-
-    if response.status_code != 200:
-        raise ConnectionRefusedError("Page is not accessible")
-
+    response.raise_for_status()
     return response.text
 
 
