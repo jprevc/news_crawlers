@@ -4,10 +4,12 @@ import os
 from abc import ABC, abstractmethod
 import sys
 import inspect
-from typing import Callable
+from collections.abc import Callable
 
 import bs4
 import requests
+
+SpiderItem = dict[str, str]
 
 
 class Spider(ABC):
@@ -28,7 +30,7 @@ class Spider(ABC):
         """
 
     @abstractmethod
-    def run(self) -> list[dict]:
+    def run(self) -> list[SpiderItem]:
         """
         Runs crawling on all set queries.
         """
@@ -41,7 +43,7 @@ class AvtonetSpider(Spider):
 
     name = "avtonet"
 
-    def run(self) -> list[dict]:
+    def run(self) -> list[SpiderItem]:
         found_listings = []
         for query, url in self.queries.items():
             avtonet_html = get_html_from_url(url)
@@ -74,16 +76,16 @@ class CarobniSvetSpider(Spider):
     name = "carobni_svet"
 
     @staticmethod
-    def _get_images(bs_content: bs4.BeautifulSoup) -> list[dict]:
+    def _get_images(bs_content: bs4.BeautifulSoup) -> list[SpiderItem]:
 
         image_elements = bs_content.select("ul[id=images]")[0].select("img")
 
         image_urls = [image.get("data-original-src") for image in image_elements]
 
-        return [{"type": "image", "data": image_url} for image_url in image_urls]
+        return [{"type": "image", "data": image_url} for image_url in image_urls if isinstance(image_url, str)]
 
     @staticmethod
-    def _get_blog(bs_content: bs4.BeautifulSoup) -> list[dict]:
+    def _get_blog(bs_content: bs4.BeautifulSoup) -> list[SpiderItem]:
         blog_element = bs_content.select("div[id=blogs]")[0]
 
         text = ""
@@ -94,11 +96,11 @@ class CarobniSvetSpider(Spider):
 
         return [{"type": "blog", "data": text}]
 
-    def run(self) -> list[dict]:
+    def run(self) -> list[SpiderItem]:
         login_url = "https://carobni-svet.com/portal/parents/login"
         login_info = {"email": os.environ["CS_EMAIL"], "password": os.environ["CS_PASS"]}
 
-        query_to_handler_map: dict[str, Callable[[bs4.BeautifulSoup], list[dict]]] = {
+        query_to_handler_map: dict[str, Callable[[bs4.BeautifulSoup], list[SpiderItem]]] = {
             "photos": self._get_images,
             "blog": self._get_blog,
         }
@@ -125,9 +127,9 @@ class BolhaSpider(Spider):
 
     name = "bolha"
 
-    def run(self) -> list[dict]:
+    def run(self) -> list[SpiderItem]:
 
-        found_items: list[dict[str, str]] = []
+        found_items: list[SpiderItem] = []
 
         for query_name, query_url in self.queries.items():
 
@@ -158,12 +160,12 @@ class BolhaSpider(Spider):
         return found_items
 
     @staticmethod
-    def _get_items_from_current_page(html: str, query_name: str) -> list[dict]:
+    def _get_items_from_current_page(html: str, query_name: str) -> list[SpiderItem]:
         bolha_bs = bs4.BeautifulSoup(html, features="html.parser")
 
         listings = bolha_bs.select("li.EntityList-item")
 
-        found_items: list[dict[str, str]] = []
+        found_items: list[SpiderItem] = []
         for listing in listings:
             listing_el = listing.select("a.link")
             price_el = listing.select("strong.price")
@@ -220,6 +222,12 @@ def get_spider_by_name(name: str) -> type[Spider]:
     :raises KeyError: If spider could not be found.
     """
     for _, obj in inspect.getmembers(sys.modules[__name__]):
-        if inspect.isclass(obj) and issubclass(obj, Spider) and obj.name == name:
-            return obj
+        if not inspect.isclass(obj):
+            continue
+        try:
+            if issubclass(obj, Spider) and obj.name == name:
+                return obj
+        except TypeError:
+            # Ignore runtime typing artifacts such as parameterized builtins.
+            continue
     raise KeyError(f"Could not find spider with name attribute set to {name}.")
